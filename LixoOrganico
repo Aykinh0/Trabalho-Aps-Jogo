@@ -1,0 +1,15 @@
+package Jogo3Semestre;
+
+public class LixoOrganico extends Lixos{
+	
+	// Metodo Construtor 
+		public LixoOrganico (String nome) {
+			super(nome, "Orgânico");
+		}
+		
+		// Metodo Abstract: A cada lixo coletado reciclável recebe dez pontos
+		public int getPontuacao() {
+			return 10;
+		}
+		
+}
