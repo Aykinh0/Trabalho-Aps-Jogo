@@ -1,0 +1,298 @@
+# Trabalho-Aps-Jogo
+package Jogo3Semestre;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JPanel;
+import java.util.Random;
+import java.awt.color.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image; 
+
+public class PainelJogo extends JPanel implements Runnable, KeyListener {
+	
+	int PosicaoLixoX;
+	int PosicaoLixoY;
+
+	Image imageJogador;
+	Image imgOrganico;
+	Image imgReciclavel;
+	Image imgSurpresa;
+
+	int PosicaoJogadorX;
+	int PosicaoJogadorY;
+	
+
+	int PontosJogo;
+	int VelocidadeJogo;
+	int GameOver = 0;
+
+	Random random = new Random();
+
+	Lixos lixoAtual;
+	
+	boolean ElementoSurpresa = false;
+	boolean JogoIniciado = false;
+
+	
+	public PainelJogo() {
+			
+		PosicaoLixoX = 300;
+		PosicaoLixoY = 15;
+
+		PosicaoJogadorX = 300;
+		PosicaoJogadorY = 590;
+		
+
+		PontosJogo = 0;
+		VelocidadeJogo = 4;
+	  
+	  ImageIcon icon = new ImageIcon(
+		getClass().getResource("user.png")
+			  
+	  );
+	ImageIcon iconOrganico = new ImageIcon(getClass().getResource("lixoorganico.png"));
+	
+	imgOrganico = iconOrganico.getImage();
+	
+	ImageIcon iconReciclavel = new ImageIcon(getClass().getResource("lixoreciclavelimg.png"));
+	
+	imgReciclavel = iconReciclavel.getImage();
+	
+	ImageIcon iconSurpresa = new ImageIcon(getClass().getResource("elementosurpresa.png"));
+	
+	imgSurpresa = iconSurpresa.getImage();
+	
+	  
+	  imageJogador = icon.getImage();
+
+		setFocusable(true);
+		addKeyListener(this);
+
+		
+		selecaoLixo();
+	}
+	
+	public void selecaoLixo() {
+		
+		// Usa o random para ir de 0 a 1 
+		int sorteioLixo = random.nextInt(2);
+		int surpresa = random.nextInt(5);
+		
+		if (surpresa == 0) {
+			ElementoSurpresa = true;
+			// pode deixar qualquer lixo aqui
+	        lixoAtual = new LixoOrganico("Elemento Surpresa");
+		}
+		else {
+			ElementoSurpresa = false;
+		}
+		
+		
+		//  Condição para verificar qual vai ser o tipo de lixo
+		if(sorteioLixo == 0) {
+			lixoAtual = new LixoOrganico("Casca de Banana");
+		}
+		else
+		{
+			lixoAtual = new LixoReciclavel("Garrafa Pet");
+		}
+		
+		// Salva o tipo de lixo 
+		lixoAtual.getTipoLixo();
+		lixoAtual.getPontuacao();
+	}
+	
+	@Override
+	public void run() {
+		while (true) {
+	        
+			// Pega a posição inicial do Y e vai adicionando 2px
+			PosicaoLixoY += VelocidadeJogo;
+	        
+	        // Caso a posição passe de 700px (medida da tela) ele volta para sua posição inicial
+	        if(PosicaoLixoY > 700) {
+	        		PontosJogo -= 5;
+	        		PosicaoLixoY = 0;
+	        		
+	        		// Gera uma nova localização de x para a posição do lixo
+	        		PosicaoLixoX = random.nextInt(getWidth() - 60 );
+	        		selecaoLixo();
+	        }
+	        
+	        // Impede o jogador sair fora da tela 
+	        if (PosicaoJogadorX < 20) {
+	            PosicaoJogadorX = 20;
+	        }
+
+	        if (PosicaoJogadorX > getWidth() - 40) {
+	            PosicaoJogadorX = getWidth() - 40;
+	        }
+	        
+	        repaint(); // redesenha
+	        
+	        //if(PosicaoLixoY == PosicaoJogadorY && PosicaoLixoX == 300 + 40) {
+	        if (PosicaoLixoY + 30 >= PosicaoJogadorY && PosicaoLixoX >= PosicaoJogadorX &&
+	        	    PosicaoLixoX <= PosicaoJogadorX + 80) {
+	        	
+	        		JogoIniciado = true;
+	        		
+	        		if (ElementoSurpresa) {
+
+	        	        PontosJogo -= 10;
+
+	        	        System.out.println("Elemento surpresa! -10 pontos");
+
+	        	    }
+	        	    else {
+
+	        	        // PONTUAÇÃO NORMAL
+	        	        PontosJogo += lixoAtual.getPontuacao();
+
+	        	        System.out.println(
+	        	            lixoAtual.getNomeLixo() +
+	        	            " | Pontos: " + PontosJogo
+	        	        );
+	        	    }
+
+	        	    // AUMENTO DA VELOCIDADE
+	        	    if (PontosJogo >= 50) {
+	        	        VelocidadeJogo = 6;
+	        	    }
+	        	    if (PontosJogo >= 100) {
+	        	        VelocidadeJogo = 8;
+	        	    }
+
+	        	    // IMPEDE PONTOS NEGATIVOS
+	        	    if (PontosJogo < 0) {
+	        	        PontosJogo = 0;
+	        	    }
+
+	        	    // RESETA O LIXO
+	        	    PosicaoLixoY = 0;
+
+	        	    // NOVA POSIÇÃO
+	        	    PosicaoLixoX = random.nextInt(getWidth() - 40);
+	        	   
+	        	    // GERA NOVO LIXO
+	        	    selecaoLixo();
+	        		
+	        		
+	        		
+	        }
+	        
+	        			// Lógica se o user ganhar
+	     			if (PontosJogo >= 150) {
+
+	     				GameOver = 2;
+
+	     				JOptionPane.showMessageDialog(
+	     					null,
+	     					"PARABÉNS! Você salvou a cidade da poluição!\n\n"
+	     					+ "Sustentabilidade é cuidar hoje do amanhã."
+	     				);
+
+	     				break;
+	     			}
+	     			
+	     			// lógica se o user perder
+	     			if (PontosJogo <= 0 && JogoIniciado) {
+
+	     			    PontosJogo = 0;
+
+	     			    GameOver = 1;
+
+	     			    JOptionPane.showMessageDialog(
+	     			        null,
+	     			        "A cidade foi tomada pelo lixo...\n\n"
+	     			        + "Pequenas ações sustentáveis fazem grande diferença."
+	     			    );
+
+	     			    break;
+	     			}
+
+	    			repaint();
+	        
+	        
+	        // Tratamento de exceção 
+	        try {
+	            Thread.sleep(50);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	            break; 
+	        }
+	    }
+	}
+	
+    
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g); 
+		
+		Graphics2D g2d = (Graphics2D) g;
+		Font FontePontuacao = new Font ("Roboto", Font.ITALIC, 16);
+		
+		if (ElementoSurpresa) {
+
+		    g.drawImage(imgSurpresa,PosicaoLixoX,PosicaoLixoY,50,50, null);
+		    
+		}
+		else {
+
+		    if (lixoAtual instanceof LixoReciclavel) {
+
+		        g.drawImage(imgReciclavel, PosicaoLixoX,PosicaoLixoY,50,50, null);
+				        
+
+		    } else {
+
+		        g.drawImage( imgOrganico,PosicaoLixoX, PosicaoLixoY,50,50, null);
+		   
+		    }
+		}
+		
+		g.drawImage(imageJogador, PosicaoJogadorX, PosicaoJogadorY, 80,80, null);
+		g.setColor(Color.white);
+		g2d.setFont(FontePontuacao);
+		g.drawString("Pontuação: " + PontosJogo, 10, 30);
+		g.setColor(Color.white);
+		g.drawString("Velocidade: " + VelocidadeJogo, 10, 60);
+		
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+	    int tecla = e.getKeyCode();
+
+	    if (tecla == KeyEvent.VK_LEFT) {
+	        PosicaoJogadorX -= 10;
+	    }
+
+	    if (tecla == KeyEvent.VK_RIGHT) {
+	        PosicaoJogadorX += 10;
+	    }
+
+	    repaint();
+	}
+	
+	@Override
+	public void keyTyped(KeyEvent e) {
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+
+	}
+	
+	
+}
+
