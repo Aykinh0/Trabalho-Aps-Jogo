@@ -1,0 +1,25 @@
+package Jogo3Semestre;
+
+public abstract class Lixos {
+	protected String NomeLixo;
+	protected String TipoLixo;
+	
+	// Metodo Construtor
+	public Lixos (String _NomeLixo, String _TipoLixo) {
+		this.NomeLixo = _NomeLixo;
+		this.TipoLixo = _TipoLixo;
+	}
+	
+	// Metodo Get: Para retornar o valor 
+	public String getTipoLixo() {
+		return TipoLixo;
+	}
+	
+	// Metodo Get: Para retornar o valor
+	public String getNomeLixo() {
+		return NomeLixo;
+	}
+	
+	// Metodo Abstract: Para criarmos os pontos
+	public abstract int getPontuacao();
+}
