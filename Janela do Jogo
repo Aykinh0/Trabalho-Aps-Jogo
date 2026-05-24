@@ -1,0 +1,48 @@
+	package Jogo3Semestre;
+	
+	import java.awt.Image;
+	
+	import javax.swing.ImageIcon;
+	import javax.swing.JFrame;
+	import javax.swing.JLabel;
+
+	
+	public class JFrameJanela extends JFrame {
+		
+		public void PainelJogo() {
+			JFrame janela = new JFrame(); // new JFrame: Cria uma nova janela do java 
+			janela.setTitle("Jogo dos Lixos");
+			janela.setDefaultCloseOperation(EXIT_ON_CLOSE); // Encerra o programa quando o "x" for selecionado
+			janela.setFocusable(true); // setFocusable: Permite a interação do usuário com a tela  
+			janela.setBounds( 0 , 0 , 600, 700); // Medida da janela, estrutura: setBounds(x, y, largura, altura);
+			janela.setLocationRelativeTo(null); // Calcula o espaço da tela e centraliza a janela 
+			janela.setResizable(false); // setResizable: Bloqueia o usuário de manipular o tamanho da janela
+			
+			
+			// Adição da imagem no fundo do JFrame
+			ImageIcon imgicon = new ImageIcon(getClass().getResource("fundojogo.png"));
+			Image img = imgicon.getImage();
+			Image imgRedimensionada = img.getScaledInstance(600, 700, Image.SCALE_SMOOTH);
+			ImageIcon imgFinal = new ImageIcon(imgRedimensionada);
+			JLabel label = new JLabel(imgFinal);
+			label.setLayout(null);
+			janela.setContentPane(label);
+			
+
+	        // Adiciona o Painel no JFrame
+			PainelJogo pj = new PainelJogo();
+			pj.setBounds(0, 0, 600, 700);
+			pj.setOpaque(false);
+			label.add(pj);
+			
+			
+			// Adicionna o Thread
+			Thread t = new Thread(pj);
+			t.start();
+			
+			
+			janela.setVisible(true); // setVisible(true): Mostra na tela 
+			pj.requestFocusInWindow();
+			
+		}
+	}
